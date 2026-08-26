@@ -94,7 +94,7 @@ h1 br {
 .hex__content { position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:4px; }
 .hex__content strong { font-size:22px; letter-spacing:-.05em; }
 .hex__content small { color:#888; font-size:8px; letter-spacing:.25em; }
-.mini-mark, .mini-mark-img { width:70px; height:70px; clip-path:inherit;  margin-bottom:0px; }
+.mini-mark, .mini-mark-img { width:70px; height:80px; clip-path:inherit;  margin-bottom:0px; }
 
 .hex-orbit { position:absolute; border:1px solid rgba(245,166,35,.16); border-radius:50%; }
 .hex-orbit--one { width:470px; height:470px; animation:spin 28s linear infinite; }
