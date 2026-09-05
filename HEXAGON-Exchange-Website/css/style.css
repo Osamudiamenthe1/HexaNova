@@ -196,6 +196,9 @@ h1 {
     line-height: 1.15;
     letter-spacing: -.065em;
     max-width: 720px;
+    width: fit-content;
+    margin-inline: auto;
+    text-align: left;
 }
 h1 span,
 h2 span {
@@ -1095,9 +1098,8 @@ h2 {
     .contact-grid { gap: 40px; }
     .footer-inner { flex-direction: column; align-items: flex-start; }
     .trust-line { flex-wrap: wrap; }
-}
 
-/* ===== Center all main content on mobile (header/footer untouched) ===== */
+    /* ===== Center all main content on mobile (header/footer untouched) ===== */
 main {
     text-align: center;
 }
@@ -1131,6 +1133,8 @@ main .contact-cards {
 }
 main .contact-card {
     text-align: left;
+}
+
 }
 
 @media (prefers-reduced-motion: reduce) {
