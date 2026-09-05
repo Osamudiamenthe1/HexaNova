@@ -21,6 +21,7 @@ html {
     scroll-behavior: smooth;
     overflow-x: hidden;
     width: 100%;
+    max-width: 100vw;
 }
 body {
     font-family: "Inter", system-ui, sans-serif;
@@ -28,6 +29,7 @@ body {
     color: var(--text-color);
     line-height: 1.6;
     overflow-x: hidden;
+    max-width: 100vw;
     padding-top: var(--header-height, 61px);
 }
 a {
