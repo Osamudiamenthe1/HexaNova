@@ -403,9 +403,11 @@ h1 br {
 
 .two-col {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 80px;
-    align-items: start;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    align-items: center;
+    text-align: center;
+    justify-items: center;
 }
 h2 {
     font-size: clamp(38px, 5vw, 58px);
@@ -416,20 +418,24 @@ h2 {
     color: var(--muted-text);
     max-width: 560px;
     font-size: 16px;
+    margin-inline: auto;
+    text-align: center;
 }
 .section-copy p + p {
     margin-top: 18px;
 }
 .section-intro {
     display: flex;
-    justify-content: space-between;
-    align-items: end;
-    gap: 40px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
     margin-bottom: 48px;
 }
 .section-intro > p {
     color: var(--muted-text);
-    max-width: 330px;
+    max-width: 560px;
+    margin-inline: auto;
 }
 .service-grid {
     display: grid;
@@ -1046,6 +1052,10 @@ h2 {
         width: 100%;
     }
 
+    main h1 {
+    text-align: center;
+}
+
     .hero-grid { min-height: auto; }
     .hero { padding-top: 20px; padding-bottom: 20px; }    
     h1 { font-size: clamp(48px, 15vw, 68px); }
@@ -1055,7 +1065,7 @@ h2 {
     .hex-orbit--two { width: 420px; height: 420px; }
     .floating-hex { width: 55px; height: 55px; }
     .section-intro { display: block; }
-    .section-intro > p { margin-top: 18px; }
+    .section-intro > p { margin-top: 18px; margin-inline: auto; }
     .service-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .service-card {
         padding: 16px;
@@ -1087,6 +1097,42 @@ h2 {
     .trust-line { flex-wrap: wrap; }
 }
 
+/* ===== Center all main content on mobile (header/footer untouched) ===== */
+main {
+    text-align: center;
+}
+
+/* Flex/block containers that need their own centering too,
+   since text-align alone doesn't re-center flex rows or fixed-width boxes */
+main .hero-actions,
+main .trust-line,
+main .section-intro {
+    justify-content: center;
+}
+main .service-icon {
+    margin-inline: auto;
+}
+
+/* Steps: turn each numbered row into a centered stack instead of
+   a left-aligned number + text row */
+main .step {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* Contact cards: center the card itself on the page, but keep the
+   label/value text inside each card left-aligned (a row of icon +
+   two-line text reads better left-aligned, even when centered
+   as a block on the page) */
+main .contact-cards {
+    justify-content: center;
+    margin-inline: auto;
+}
+main .contact-card {
+    text-align: left;
+}
+
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after {
@@ -1095,4 +1141,8 @@ h2 {
         transition-duration: .01ms !important;
     }
     .reveal { opacity: 1; transform: none; }
+}
+
+.nowrap {
+    white-space: nowrap;
 }
