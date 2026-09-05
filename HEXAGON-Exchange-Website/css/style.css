@@ -200,7 +200,7 @@ h1 {
     margin-inline: auto;
     text-align: left;
 }
-h1 span,
+h1 span:not(.nowrap),
 h2 span {
     color: var(--primary-color);
 }
