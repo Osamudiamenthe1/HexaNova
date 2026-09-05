@@ -1055,8 +1055,24 @@ h2 {
     .section-intro { display: block; }
     .section-intro > p { margin-top: 18px; }
     .service-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .service-card { padding: 16px; min-height: 0; aspect-ratio: 1 / 1; }
-    .service-icon { margin-bottom: 12px; }
+    .service-card {
+        padding: 16px;
+        min-height: 0;
+        height: auto;
+    }
+    .service-icon {
+        width: 56px;
+        height: 56px;
+        font-size: 26px;
+        margin-bottom: 10px;
+    }
+    .service-card h3 {
+        font-size: 16px;
+        margin-bottom: 6px;
+    }
+    .service-card p {
+        font-size: 12px;
+    }
     .steps { grid-template-columns: 1fr; }
     .step { border-right: 0; border-bottom: 1px solid var(--border-color); }
     .step:last-child { border-bottom: 0; }
