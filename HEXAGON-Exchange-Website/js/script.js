@@ -43,6 +43,31 @@ document.querySelectorAll("[data-email-display]").forEach(el => {
 });
  
 document.getElementById("year").textContent = new Date().getFullYear();
+
+document.getElementById("year").textContent = new Date().getFullYear();
+
+/*
+  ============================================================
+  HEADER HEIGHT SYNC — keeps a live --header-height CSS variable
+  matching the fixed header's real rendered height, so body's
+  padding-top and every section's scroll-margin-top stay accurate
+  even when the header wraps to an extra row (e.g. rate bar
+  wrapping on narrow phones).
+  ============================================================
+*/
+function setHeaderHeightVar() {
+  const header = document.querySelector(".site-header");
+  if (!header) return;
+  document.documentElement.style.setProperty("--header-height", `${header.offsetHeight}px`);
+}
+setHeaderHeightVar();
+window.addEventListener("resize", setHeaderHeightVar);
+window.addEventListener("load", setHeaderHeightVar);
+
+const headerEl = document.querySelector(".site-header");
+if (headerEl && "ResizeObserver" in window) {
+  new ResizeObserver(setHeaderHeightVar).observe(headerEl);
+}
  
 const menuToggle = document.querySelector(".menu-toggle");
 const navLinks = document.querySelector(".nav-links");
@@ -59,6 +84,27 @@ document.querySelectorAll(".nav-links a").forEach(link => {
     menuToggle.setAttribute("aria-expanded", "false");
     menuToggle.setAttribute("aria-label", "Open menu");
   });
+});
+
+/*
+  ============================================================
+  CLOSE MENU ON OUTSIDE TAP — closes the mobile dropdown when
+  the user taps/clicks anywhere that isn't the menu itself or
+  the hamburger button (which already has its own toggle above).
+  ============================================================
+*/
+document.addEventListener("click", (event) => {
+  const isOpen = navLinks.classList.contains("open");
+  if (!isOpen) return;
+
+  const clickedInsideMenu = navLinks.contains(event.target);
+  const clickedToggleButton = menuToggle.contains(event.target);
+
+  if (!clickedInsideMenu && !clickedToggleButton) {
+    navLinks.classList.remove("open");
+    menuToggle.setAttribute("aria-expanded", "false");
+    menuToggle.setAttribute("aria-label", "Open menu");
+  }
 });
  
 const observer = new IntersectionObserver((entries) => {
