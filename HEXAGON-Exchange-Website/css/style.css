@@ -981,11 +981,10 @@ h2 {
 
     /* Header row — original structure, unchanged */
     .nav {
-        flex-wrap: wrap;
-        row-gap: 10px;
+        flex-wrap: nowrap;
         gap: 8px;
     }
-    .brand { order: 1; }
+    .brand { order: 1; flex-shrink: 0; }
     .rate-bar {
         order: 2;
         width: fit-content;
@@ -996,7 +995,7 @@ h2 {
         padding: 4px 8px;
         border-radius: 12px;
     }
-    .menu-toggle { order: 3; }
+    .menu-toggle { order: 3; flex-shrink: 0; }
     .nav-links { order: 4; }
 
     .rate-row { justify-content: center; flex-wrap: nowrap; gap: 4px; }
