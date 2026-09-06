@@ -35,6 +35,7 @@ body {
     overflow-x: hidden;
     max-width: 100vw;
     padding-top: var(--header-height, 61px);
+    position: relative;
 }
 a {
     color: inherit;
@@ -76,8 +77,9 @@ main section[id] {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 30px;
+    gap: 20px;
     position: relative;
+    min-width: 0;
 }
 .brand {
     display: flex;
@@ -330,10 +332,10 @@ h1 br {
 }
 
 /* Hover: glow only + shine plays once — background stays identical */
-
 .hex--main:hover::after {
     transform: translateX(130%);
-}.hex__content {
+}
+.hex__content {
     position: relative;
     z-index: 2;
     display: flex;
@@ -659,7 +661,6 @@ h2 {
     color: var(--muted-text);
     max-width: 480px;
     margin-top: 22px;
-    text-align: center;
 }
 .contact-cards {
     display: grid;
@@ -882,6 +883,8 @@ h2 {
     border: 1px solid var(--border-color);
     backdrop-filter: blur(8px);
     width: fit-content;
+    max-width: 100%;
+    overflow: hidden;
 }
 .rate-row {
     display: contents;
@@ -976,41 +979,32 @@ h2 {
     .swift-section { padding-top: 20px; }
     .menu-toggle { display: block; }
 
+    /* Header row — original structure, unchanged */
     .nav {
         flex-wrap: wrap;
         row-gap: 10px;
-        min-width: 0;
+        gap: 8px;
     }
     .brand { order: 1; }
-        .rate-bar {
+    .rate-bar {
         order: 2;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
         width: fit-content;
         max-width: 100%;
-        margin: 0 auto;
-        gap: 3px;
-        padding: 6px 12px;
+        margin: 0;
+        align-items: center;
+        gap: 2px;
+        padding: 4px 8px;
         border-radius: 12px;
-        overflow: hidden;
-        box-sizing: border-box;
     }
     .menu-toggle { order: 3; }
     .nav-links { order: 4; }
 
-    .rate-row {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-        gap: 3px 6px;
-        width: 100%;
-    }
-    .rate-label { font-size: 7.5px; white-space: nowrap; }
-    .rate-value { font-size: 9px; white-space: nowrap; }
-    .rate-sparkline { width: 24px; height: 11px; }
-    .sparkline-badge { padding: 1px 4px; border-radius: 6px; }.rate-meta {
+    .rate-row { justify-content: center; flex-wrap: nowrap; gap: 4px; }
+    .rate-label { min-width: 40px; font-size: 6.5px; }
+    .rate-value { font-size: 8px; }
+    .rate-sparkline { width: 20px; height: 9px; }
+    .sparkline-badge { padding: 1px 3px; border-radius: 5px; }
+    .rate-meta {
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
@@ -1056,7 +1050,7 @@ h2 {
         border-radius: 8px;
         transition: background .2s ease, color .2s ease;
     }
-        .nav-links a:hover {
+    .nav-links a:hover {
         background: rgba(245, 166, 35, .08);
         color: var(--primary-color);
     }
@@ -1075,11 +1069,11 @@ h2 {
     }
 
     main h1 {
-    text-align: center;
-}
+        text-align: center;
+    }
 
     .hero-grid { min-height: auto; }
-    .hero { padding-top: 20px; padding-bottom: 20px; }    
+    .hero { padding-top: 20px; padding-bottom: 20px; }
     h1 { font-size: clamp(48px, 15vw, 68px); }
     .hero-visual { min-height: 390px; }
     .hex--main { width: 220px; height: 220px; }
@@ -1111,49 +1105,44 @@ h2 {
     .step { border-right: 0; border-bottom: 1px solid var(--border-color); }
     .step:last-child { border-bottom: 0; }
     .swift-card { padding: 24px 20px; height: 410px; }
-    .swift-symbol { margin-right: 0; }
-    .hex--large { width: 90px; height: 90px; font-size: 32px; }    .swift-symbol { margin-top: 40px; }
+    .swift-symbol { margin-right: 0; margin-top: 40px; }
     .hex--large { width: 130px; height: 130px; font-size: 45px; }
     .contact-grid { gap: 40px; }
     .footer-inner { flex-direction: column; align-items: flex-start; }
     .trust-line { flex-wrap: wrap; }
 
     /* ===== Center all main content on mobile (header/footer untouched) ===== */
-main {
-    text-align: center;
+    main {
+        text-align: center;
+    }
+
+    main .hero-actions,
+    main .trust-line,
+    main .section-intro {
+        justify-content: center;
+    }
+    main .service-icon {
+        margin-inline: auto;
+    }
+
+    main .step {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    main .contact-cards {
+        justify-content: center;
+        margin-inline: auto;
+    }
+    main .contact-card {
+        text-align: left;
+    }
 }
 
-/* Flex/block containers that need their own centering too,
-   since text-align alone doesn't re-center flex rows or fixed-width boxes */
-main .hero-actions,
-main .trust-line,
-main .section-intro {
-    justify-content: center;
-}
-main .service-icon {
-    margin-inline: auto;
-}
-
-/* Steps: turn each numbered row into a centered stack instead of
-   a left-aligned number + text row */
-main .step {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-/* Contact cards: center the card itself on the page, but keep the
-   label/value text inside each card left-aligned (a row of icon +
-   two-line text reads better left-aligned, even when centered
-   as a block on the page) */
-main .contact-cards {
-    justify-content: center;
-    margin-inline: auto;
-}
-main .contact-card {
-    text-align: left;
-}
-
+/* Extra-narrow phones — trim logo subtitle a touch further */
+@media (max-width: 400px) {
+    .brand small { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1163,15 +1152,16 @@ main .contact-card {
         animation-iteration-count: 1 !important;
         transition-duration: .01ms !important;
     }
-    .reveal { 
-      display: flex;
-      opacity: 1; transform: none; }
+    .reveal {
+        display: flex;
+        opacity: 1;
+        transform: none;
+    }
 }
 
 .nowrap {
     white-space: nowrap;
 }
-
 
 /* ===== CONTACT INTRO — CENTER TEXT ONLY, NEVER TOUCHES .contact-cards ===== */
 @media (max-width: 900px) {
@@ -1185,4 +1175,3 @@ main .contact-card {
         text-align: center;
     }
 }
-
