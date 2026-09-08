@@ -176,8 +176,8 @@ spySections.forEach(section => scrollSpyObserver.observe(section));
   const HISTORY_LENGTH = 10;     // how many past rates to keep for the sparkline
  
   // Your current pricing adjustments (USDT/NGN)
-  const BUY_ADJUSTMENT = 30;     // ₦30 profit on buy
-  const SELL_ADJUSTMENT = 40;    // ₦40 buffer on sell
+  const BUY_ADJUSTMENT = 13;     // ₦13 profit on buy
+  const SELL_ADJUSTMENT = 23;    // ₦23 buffer on sell
  
   // CoinGecko gives the GLOBAL market-average USDT price, not
   // Nigeria's real P2P/street rate — this typically runs a bit
