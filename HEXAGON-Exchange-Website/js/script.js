@@ -189,7 +189,7 @@ spySections.forEach(section => scrollSpyObserver.observe(section));
   // gap. Example: if CoinGecko shows ₦1,377 but the real street
   // rate is ₦1,365, set this to -12. If the street rate is HIGHER
   // than CoinGecko, use a positive number instead.
-  const NIGERIA_PREMIUM_OFFSET = 45; // naira, can be negative
+  const NIGERIA_PREMIUM_OFFSET = 37; // naira, can be negative
  
   // BTC/USDT row uses the SAME underlying USDT/NGN rate, just with
   // this extra spread added on top of your usual margin.
