@@ -173,7 +173,7 @@ spySections.forEach(section => scrollSpyObserver.observe(section));
  
 (function() {
   const REFRESH_INTERVAL = 60;   // seconds
-  const HISTORY_LENGTH = 10;     // how many past rates to keep for the sparkline
+  const HISTORY_LENGTH = 3;     // how many past rates to keep for the sparkline
  
   // Your current pricing adjustments (USDT/NGN)
   const BUY_ADJUSTMENT = 13;     // ₦13 profit on buy
