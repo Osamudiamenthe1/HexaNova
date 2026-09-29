@@ -401,24 +401,27 @@ spySections.forEach(section => scrollSpyObserver.observe(section));
    * to fetchMonierateRate() (still below, untouched) once your
    * Monierate billing/account issue is resolved.
    */
-  async function fetchCoinGeckoRate() {
-    const response = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ngn"
-    );
- 
-    if (!response.ok) {
-      throw new Error(`CoinGecko HTTP ${response.status}`);
-    }
- 
-    const data = await response.json();
-    const usdtMid = data.tether ? parseFloat(data.tether.ngn) : NaN;
- 
-    if (!Number.isFinite(usdtMid)) {
-      throw new Error('Invalid rate from CoinGecko');
-    }
- 
-    return usdtMid;
+  async function const RATE_PROXY_URL = "https://your-project.vercel.app/api/coingecko";
+
+async function fetchCoinGeckoRate() {
+  const response = await fetch(RATE_PROXY_URL, {
+    cache: "no-store",
+    signal: AbortSignal.timeout(8000)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Rate proxy HTTP ${response.status}`);
   }
+
+  const data = await response.json();
+  const usdtMid = data.tether ? parseFloat(data.tether.ngn) : NaN;
+
+  if (!Number.isFinite(usdtMid)) {
+    throw new Error("Invalid rate from proxy");
+  }
+
+  return usdtMid;
+}
  
   /**
    * Fetch the current parallel-market USDT/NGN rate from Busha.
