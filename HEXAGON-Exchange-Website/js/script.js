@@ -400,28 +400,33 @@ spySections.forEach(section => scrollSpyObserver.observe(section));
    * street rate by a noticeable amount at times. Switch this back
    * to fetchMonierateRate() (still below, untouched) once your
    * Monierate billing/account issue is resolved.
+   *
+   * NOTE: CoinGecko does not send CORS headers, so a browser can't
+   * call it directly. Requests go through a small server-side proxy
+   * (RATE_PROXY_URL below) that adds the required CORS headers.
+   * Replace the placeholder URL with your deployed proxy endpoint.
    */
-  async function const RATE_PROXY_URL = "https://your-project.vercel.app/api/coingecko";
+  const RATE_PROXY_URL = "https://your-project.vercel.app/api/coingecko";
 
-async function fetchCoinGeckoRate() {
-  const response = await fetch(RATE_PROXY_URL, {
-    cache: "no-store",
-    signal: AbortSignal.timeout(8000)
-  });
+  async function fetchCoinGeckoRate() {
+    const response = await fetch(RATE_PROXY_URL, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(8000)
+    });
 
-  if (!response.ok) {
-    throw new Error(`Rate proxy HTTP ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`Rate proxy HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    const usdtMid = data.tether ? parseFloat(data.tether.ngn) : NaN;
+
+    if (!Number.isFinite(usdtMid)) {
+      throw new Error("Invalid rate from proxy");
+    }
+
+    return usdtMid;
   }
-
-  const data = await response.json();
-  const usdtMid = data.tether ? parseFloat(data.tether.ngn) : NaN;
-
-  if (!Number.isFinite(usdtMid)) {
-    throw new Error("Invalid rate from proxy");
-  }
-
-  return usdtMid;
-}
  
   /**
    * Fetch the current parallel-market USDT/NGN rate from Busha.
