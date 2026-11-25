@@ -7,14 +7,8 @@
  
 const CONFIG = {
   businessName: "HEXAGON Exchange",
- 
-  // Enter WhatsApp in international format WITHOUT + or spaces.
-  // Example: "2348012345678"
   whatsappNumber: "2348134600671",
- 
-  // Change this to your real business email.
   email: "osamudiamen025@gmail.com",
- 
   tagline: "Secure. Sweet. Synaptic."
 };
  
@@ -34,7 +28,6 @@ document.querySelectorAll("[data-email]").forEach(link => {
 });
  
 document.querySelectorAll("[data-whatsapp-display]").forEach(el => {
-  // Always show nicely formatted number on the page
   el.textContent = "+234 813-460-0671";
 });
  
@@ -44,15 +37,9 @@ document.querySelectorAll("[data-email-display]").forEach(el => {
  
 document.getElementById("year").textContent = new Date().getFullYear();
 
-document.getElementById("year").textContent = new Date().getFullYear();
-
 /*
   ============================================================
-  HEADER HEIGHT SYNC — keeps a live --header-height CSS variable
-  matching the fixed header's real rendered height, so body's
-  padding-top and every section's scroll-margin-top stay accurate
-  even when the header wraps to an extra row (e.g. rate bar
-  wrapping on narrow phones).
+  HEADER HEIGHT SYNC
   ============================================================
 */
 function setHeaderHeightVar() {
@@ -68,7 +55,48 @@ const headerEl = document.querySelector(".site-header");
 if (headerEl && "ResizeObserver" in window) {
   new ResizeObserver(setHeaderHeightVar).observe(headerEl);
 }
- 
+
+/*
+  ============================================================
+  THEME TOGGLE
+  ============================================================
+*/
+const THEME_KEY = "hexagon-theme";
+const themeToggle = document.querySelector(".theme-toggle");
+const systemLight = window.matchMedia("(prefers-color-scheme: light)");
+
+function currentTheme() {
+  const set = document.documentElement.getAttribute("data-theme");
+  if (set === "light" || set === "dark") return set;
+  return systemLight.matches ? "light" : "dark";
+}
+
+function syncThemeUI() {
+  if (!themeToggle) return;
+  const theme = currentTheme();
+  const next = theme === "dark" ? "light" : "dark";
+  themeToggle.setAttribute("aria-label", `Switch to ${next} mode`);
+  document.querySelectorAll('meta[name="theme-color"]').forEach(meta => {
+    meta.setAttribute("content", theme === "dark" ? "#0B0B0C" : "#FAF9F6");
+  });
+}
+
+if (themeToggle) {
+  themeToggle.addEventListener("click", () => {
+    const next = currentTheme() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+    syncThemeUI();
+  });
+  systemLight.addEventListener("change", syncThemeUI);
+  syncThemeUI();
+}
+
+/*
+  ============================================================
+  MOBILE MENU
+  ============================================================
+*/
 const menuToggle = document.querySelector(".menu-toggle");
 const navLinks = document.querySelector(".nav-links");
  
@@ -78,21 +106,23 @@ menuToggle.addEventListener("click", () => {
   menuToggle.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
 });
  
+function closeMenu() {
+  navLinks.classList.remove("open");
+  menuToggle.setAttribute("aria-expanded", "false");
+  menuToggle.setAttribute("aria-label", "Open menu");
+}
+
 document.querySelectorAll(".nav-links a").forEach(link => {
-  link.addEventListener("click", () => {
-    navLinks.classList.remove("open");
-    menuToggle.setAttribute("aria-expanded", "false");
-    menuToggle.setAttribute("aria-label", "Open menu");
-  });
+  link.addEventListener("click", closeMenu);
 });
 
-/*
-  ============================================================
-  CLOSE MENU ON OUTSIDE TAP — closes the mobile dropdown when
-  the user taps/clicks anywhere that isn't the menu itself or
-  the hamburger button (which already has its own toggle above).
-  ============================================================
-*/
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && navLinks.classList.contains("open")) {
+    closeMenu();
+    menuToggle.focus();
+  }
+});
+
 document.addEventListener("click", (event) => {
   const isOpen = navLinks.classList.contains("open");
   if (!isOpen) return;
@@ -101,9 +131,7 @@ document.addEventListener("click", (event) => {
   const clickedToggleButton = menuToggle.contains(event.target);
 
   if (!clickedInsideMenu && !clickedToggleButton) {
-    navLinks.classList.remove("open");
-    menuToggle.setAttribute("aria-expanded", "false");
-    menuToggle.setAttribute("aria-label", "Open menu");
+    closeMenu();
   }
 });
  
@@ -118,17 +146,11 @@ const observer = new IntersectionObserver((entries) => {
  
 document.querySelectorAll(".reveal").forEach(element => observer.observe(element));
 
-
 /*
   ============================================================
-  SCROLL-SPY — highlights whichever nav link matches the
-  section currently in view. The glow/highlight styling itself
-  already exists in your CSS as .nav-links a.active — this just
-  adds/removes that class as you scroll.
+  SCROLL-SPY
   ============================================================
 */
-
-// Map each section id (e.g. "about") to its matching nav link
 const navSectionLinks = new Map();
 document.querySelectorAll(".nav-links a[href^='#']").forEach(link => {
   const targetId = link.getAttribute("href").slice(1);
@@ -140,19 +162,14 @@ const spySections = document.querySelectorAll("main section[id]");
 const scrollSpyObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     const link = navSectionLinks.get(entry.target.id);
-    if (!link) return; // section has no matching nav link (e.g. "swift")
+    if (!link) return;
 
     if (entry.isIntersecting) {
-      // Only one link should glow at a time
       navSectionLinks.forEach(a => a.classList.remove("active"));
       link.classList.add("active");
     }
   });
 }, {
-  // A section counts as "current" once it crosses roughly the
-  // upper third of the screen, and stays current until the next
-  // section crosses that same line — this avoids the highlight
-  // flickering between sections while scrolling past boundaries.
   rootMargin: "-35% 0px -55% 0px",
   threshold: 0
 });
@@ -162,64 +179,41 @@ spySections.forEach(section => scrollSpyObserver.observe(section));
  
 /*
   ============================================================
-  RATE WIDGET — MONIERATE (Busha provider)
-  Shows USDT/NGN and BTC/USDT. BTC/USDT is NOT a real BTC price —
-  it's the same USDT/NGN mid-market rate with a wider spread on
-  top, as requested. Both rows share one trend/sparkline since
-  they move together (BTC/USDT is just USDT/NGN shifted by a
-  fixed margin).
+  RATE WIDGET
   ============================================================
 */
  
 (function() {
-  const REFRESH_INTERVAL = 60;   // seconds
-  const HISTORY_LENGTH = 3;     // how many past rates to keep for the sparkline
+  const REFRESH_INTERVAL = 60;
+  const HISTORY_LENGTH = 3;
  
-  // Your current pricing adjustments (USDT/NGN)
-  const BUY_ADJUSTMENT = 13;     // ₦13 profit on buy
-  const SELL_ADJUSTMENT = 23;    // ₦23 buffer on sell
+  const BUY_ADJUSTMENT = 13;
+  const SELL_ADJUSTMENT = 23;
+  const NIGERIA_PREMIUM_OFFSET = 37;
  
-  // CoinGecko gives the GLOBAL market-average USDT price, not
-  // Nigeria's real P2P/street rate — this typically runs a bit
-  // higher. This is your manual correction for that gap.
-  //
-  // HOW TO KEEP THIS ACCURATE: every so often (weekly is plenty),
-  // check Busha or Binance P2P's USDT/NGN rate and compare it to
-  // what CoinGecko is showing. Update this number to close the
-  // gap. Example: if CoinGecko shows ₦1,377 but the real street
-  // rate is ₦1,365, set this to -12. If the street rate is HIGHER
-  // than CoinGecko, use a positive number instead.
-  const NIGERIA_PREMIUM_OFFSET = 37; // naira, can be negative
- 
-  // BTC/USDT row uses the SAME underlying USDT/NGN rate, just with
-  // this extra spread added on top of your usual margin.
-  const BTC_SPREAD_EXTRA = 2;    // ₦2 extra spread — change to 3 if you prefer
+  const BTC_SPREAD_EXTRA = 2;
   const BTC_BUY_ADJUSTMENT = BUY_ADJUSTMENT + BTC_SPREAD_EXTRA;
   const BTC_SELL_ADJUSTMENT = SELL_ADJUSTMENT + BTC_SPREAD_EXTRA;
  
-  // ---------- Monierate API config ----------
-  // Real provider-specific endpoint (parallel/P2P market rate):
-  //   curl "https://api.monierate.com/core/providers/busha"
-  //     -H "api_key: YOUR_API_KEY"
   const MONIERATE_API_KEY = "ac67fa0699395abbfa8739ed009c6f6510ae120735ec64bb81f38ce56495f98b";
   const MONIERATE_PROVIDER = "busha";
   const MONIERATE_URL = `https://api.monierate.com/core/providers/${MONIERATE_PROVIDER}`;
+
+  // Live Vercel proxy — verified working
+  const RATE_PROXY_URL = "https://hexagon-rate-proxy.vercel.app/api/coingecko";
  
-  // DOM elements — USDT row
   const buyRateEl = document.getElementById('buyRate');
   const sellRateEl = document.getElementById('sellRate');
   const usdtBuyValueEl = document.getElementById('usdt-buy-value');
   const usdtSellValueEl = document.getElementById('usdt-sell-value');
   const sparklineUsdtEl = document.getElementById('sparkline-usdt');
  
-  // DOM elements — BTC/USDT row
   const btcBuyRateEl = document.getElementById('btcBuyRate');
   const btcSellRateEl = document.getElementById('btcSellRate');
   const btcBuyValueEl = document.getElementById('btc-buy-value');
   const btcSellValueEl = document.getElementById('btc-sell-value');
   const sparklineBtcEl = document.getElementById('sparkline-btc');
  
-  // Shared elements
   const rateBarEl = document.getElementById('rate-bar');
   const lastUpdatedEl = document.getElementById('lastUpdated');
   const countdownEl = document.getElementById('countdown');
@@ -227,9 +221,6 @@ spySections.forEach(section => scrollSpyObserver.observe(section));
   let countdownInterval = null;
   let secondsLeft = REFRESH_INTERVAL;
  
-  // Keeps the last N mid-market USDT/NGN rates, used to draw both
-  // sparklines and decide the up/down trend color for both rows
-  // (they move together since BTC/USDT is derived from this).
   const usdtHistory = [];
  
   function formatNaira(amount) {
@@ -242,7 +233,7 @@ spySections.forEach(section => scrollSpyObserver.observe(section));
   function flashRate(el) {
     if (el) {
       el.classList.remove('flash');
-      void el.offsetWidth; // trigger reflow
+      void el.offsetWidth;
       el.classList.add('flash');
     }
   }
@@ -285,7 +276,7 @@ spySections.forEach(section => scrollSpyObserver.observe(section));
  
     const min = Math.min(...history);
     const max = Math.max(...history);
-    const range = max - min || 1; // avoid divide-by-zero if flat
+    const range = max - min || 1;
  
     const points = history.map((value, index) => {
       const x = (index / (history.length - 1)) * 60;
@@ -300,12 +291,9 @@ spySections.forEach(section => scrollSpyObserver.observe(section));
     pushHistory(usdtHistory, usdtMid);
     const trend = getTrend(usdtHistory);
  
-    // ---------- USDT/NGN ----------
-    const ourUsdtBuyPrice = usdtMid - BUY_ADJUSTMENT;   // what we pay buying from a customer
-    const ourUsdtSellPrice = usdtMid + SELL_ADJUSTMENT; // what we charge selling to a customer
+    const ourUsdtBuyPrice = usdtMid - BUY_ADJUSTMENT;
+    const ourUsdtSellPrice = usdtMid + SELL_ADJUSTMENT;
  
-    // "Buy" on the site = price the CUSTOMER pays to buy from us = our sell price
-    // "Sell" on the site = price the CUSTOMER gets selling to us = our buy price
     buyRateEl.textContent = formatNaira(ourUsdtSellPrice);
     sellRateEl.textContent = formatNaira(ourUsdtBuyPrice);
     applyTrendClass([usdtBuyValueEl, usdtSellValueEl], trend);
@@ -313,7 +301,6 @@ spySections.forEach(section => scrollSpyObserver.observe(section));
     flashRate(buyRateEl);
     flashRate(sellRateEl);
  
-    // ---------- BTC/USDT (same base rate, wider spread) ----------
     const ourBtcBuyPrice = usdtMid - BTC_BUY_ADJUSTMENT;
     const ourBtcSellPrice = usdtMid + BTC_SELL_ADJUSTMENT;
  
@@ -337,7 +324,6 @@ spySections.forEach(section => scrollSpyObserver.observe(section));
  
     countdownInterval = setInterval(() => {
       secondsLeft--;
- 
       countdownEl.textContent = `Next update in ${secondsLeft}s`;
  
       if (secondsLeft <= 0) {
@@ -347,52 +333,29 @@ spySections.forEach(section => scrollSpyObserver.observe(section));
     }, 1000);
   }
  
-  /**
-   * TEMPORARY STOPGAP: Monierate is returning 402 (Payment Required)
-   * on the account, so we're pulling from CoinGecko instead for now
-   * — free, no API key, and not blocked by Nigerian ISPs (unlike
-   * Binance P2P, which IS blocked at the network level in Nigeria
-   * and can't be used as a live data source for this reason).
-   *
-   * IMPORTANT CAVEAT: this is CoinGecko's global market-average
-   * USDT/NGN price, NOT the Nigerian P2P/parallel-market premium
-   * rate Monierate/Busha gave you. It can drift from the real
-   * street rate by a noticeable amount at times. Switch this back
-   * to fetchMonierateRate() (still below, untouched) once your
-   * Monierate billing/account issue is resolved.
-   */
   async function fetchCoinGeckoRate() {
-    const response = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ngn"
-    );
+    const response = await fetch(RATE_PROXY_URL, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(8000)
+    });
  
     if (!response.ok) {
-      throw new Error(`CoinGecko HTTP ${response.status}`);
+      throw new Error(`Rate proxy HTTP ${response.status}`);
     }
  
     const data = await response.json();
     const usdtMid = data.tether ? parseFloat(data.tether.ngn) : NaN;
  
     if (!Number.isFinite(usdtMid)) {
-      throw new Error('Invalid rate from CoinGecko');
+      throw new Error('Invalid rate from proxy');
     }
  
     return usdtMid;
   }
  
-  /**
-   * Fetch the current parallel-market USDT/NGN rate from Busha.
-   * We only need the usdtngn pair now — BTC/USDT is derived
-   * from this same number, not fetched separately.
-   *
-   * NOT CURRENTLY USED — see fetchCoinGeckoRate() above and the
-   * comment in fetchRate() below for why.
-   */
   async function fetchMonierateRate() {
     const response = await fetch(MONIERATE_URL, {
-      headers: {
-        api_key: MONIERATE_API_KEY
-      }
+      headers: { api_key: MONIERATE_API_KEY }
     });
  
     if (!response.ok) {
@@ -415,8 +378,6 @@ spySections.forEach(section => scrollSpyObserver.observe(section));
  
   async function fetchRate() {
     try {
-      // Swap this back to fetchMonierateRate() once your Monierate
-      // account/billing issue (402 error) is fixed.
       const rawRate = await fetchCoinGeckoRate();
       const usdtMid = rawRate + NIGERIA_PREMIUM_OFFSET;
  
@@ -433,6 +394,5 @@ spySections.forEach(section => scrollSpyObserver.observe(section));
     }
   }
  
-  // Start the first fetch
   fetchRate();
 })();
