@@ -44,6 +44,8 @@ document.querySelectorAll("[data-email-display]").forEach(el => {
  
 document.getElementById("year").textContent = new Date().getFullYear();
 
+document.getElementById("year").textContent = new Date().getFullYear();
+
 /*
   ============================================================
   HEADER HEIGHT SYNC — keeps a live --header-height CSS variable
@@ -67,41 +69,6 @@ if (headerEl && "ResizeObserver" in window) {
   new ResizeObserver(setHeaderHeightVar).observe(headerEl);
 }
  
-/*
-  ============================================================
-  THEME TOGGLE — follows the device's light/dark setting until
-  the visitor picks one; their choice is then remembered.
-  (The saved theme is applied early by a tiny script in <head>.)
-  ============================================================
-*/
-const THEME_KEY = "hexagon-theme";
-const themeToggle = document.querySelector(".theme-toggle");
-const systemLight = window.matchMedia("(prefers-color-scheme: light)");
-
-function currentTheme() {
-  const set = document.documentElement.getAttribute("data-theme");
-  if (set === "light" || set === "dark") return set;
-  return systemLight.matches ? "light" : "dark";
-}
-
-function syncThemeUI() {
-  const theme = currentTheme();
-  const next = theme === "dark" ? "light" : "dark";
-  themeToggle.setAttribute("aria-label", `Switch to ${next} mode`);
-  document.querySelectorAll('meta[name="theme-color"]').forEach(meta => {
-    meta.setAttribute("content", theme === "dark" ? "#0B0B0C" : "#FAF9F6");
-  });
-}
-
-themeToggle.addEventListener("click", () => {
-  const next = currentTheme() === "dark" ? "light" : "dark";
-  document.documentElement.setAttribute("data-theme", next);
-  try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
-  syncThemeUI();
-});
-systemLight.addEventListener("change", syncThemeUI);
-syncThemeUI();
-
 const menuToggle = document.querySelector(".menu-toggle");
 const navLinks = document.querySelector(".nav-links");
  
@@ -111,21 +78,12 @@ menuToggle.addEventListener("click", () => {
   menuToggle.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
 });
  
-function closeMenu() {
-  navLinks.classList.remove("open");
-  menuToggle.setAttribute("aria-expanded", "false");
-  menuToggle.setAttribute("aria-label", "Open menu");
-}
-
 document.querySelectorAll(".nav-links a").forEach(link => {
-  link.addEventListener("click", closeMenu);
-});
-
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && navLinks.classList.contains("open")) {
-    closeMenu();
-    menuToggle.focus();
-  }
+  link.addEventListener("click", () => {
+    navLinks.classList.remove("open");
+    menuToggle.setAttribute("aria-expanded", "false");
+    menuToggle.setAttribute("aria-label", "Open menu");
+  });
 });
 
 /*
@@ -143,7 +101,9 @@ document.addEventListener("click", (event) => {
   const clickedToggleButton = menuToggle.contains(event.target);
 
   if (!clickedInsideMenu && !clickedToggleButton) {
-    closeMenu();
+    navLinks.classList.remove("open");
+    menuToggle.setAttribute("aria-expanded", "false");
+    menuToggle.setAttribute("aria-label", "Open menu");
   }
 });
  
@@ -400,31 +360,23 @@ spySections.forEach(section => scrollSpyObserver.observe(section));
    * street rate by a noticeable amount at times. Switch this back
    * to fetchMonierateRate() (still below, untouched) once your
    * Monierate billing/account issue is resolved.
-   *
-   * NOTE: CoinGecko does not send CORS headers, so a browser can't
-   * call it directly. Requests go through a small server-side proxy
-   * (RATE_PROXY_URL below) that adds the required CORS headers.
-   * Replace the placeholder URL with your deployed proxy endpoint.
    */
-  const RATE_PROXY_URL = "https://your-project.vercel.app/api/coingecko";
-
   async function fetchCoinGeckoRate() {
-    const response = await fetch(RATE_PROXY_URL, {
-      cache: "no-store",
-      signal: AbortSignal.timeout(8000)
-    });
-
+    const response = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=tether&vs_currencies=ngn"
+    );
+ 
     if (!response.ok) {
-      throw new Error(`Rate proxy HTTP ${response.status}`);
+      throw new Error(`CoinGecko HTTP ${response.status}`);
     }
-
+ 
     const data = await response.json();
     const usdtMid = data.tether ? parseFloat(data.tether.ngn) : NaN;
-
+ 
     if (!Number.isFinite(usdtMid)) {
-      throw new Error("Invalid rate from proxy");
+      throw new Error('Invalid rate from CoinGecko');
     }
-
+ 
     return usdtMid;
   }
  
